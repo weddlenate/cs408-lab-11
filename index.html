@@ -7,56 +7,146 @@
     <title>Test AWS Lambda</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
-    <h1>Simple Demo for PUT, GET, and DELETE</h1>
+    <div class="header">
+        <h1>My Simple Inventory App</h1>
+        <button id="load-data">Load Data</button>
+    </div>
     <p id="lambda-info">
-        <!-- loaded with AJAX -->
+        <table>
+            <caption>
+                Inventory Database
+            </caption>
+            <thead>
+                <tr>
+                    <th scope=""col>id</th>
+                    <th scope=""col>Name</th>
+                    <th scope=""col>Price</th>
+                    <th scope=""col>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
     </p>
 
     <hr>
-    <button id="send-data">Send Data</button>
-    <p>Sends an example JSON object to the server with id 11111</p>
+    <article>
+        <h2>Add New Item to Database</h2>
+        <form>
+            <div class="additem">
+                <label for="id">ID: <input type="text" id="id" placeholder="Enter item ID" required></label><br>
+                <label for="name">Name: <input type="text" id="name" placeholder="Enter item Name" required></label><br>
+                <label for="price">Price: <input type="number" id="price" placeholder="Enter item Price" required></label>
+            </div>
+            <div class="additembutton">
+                <button id="add-item" aria-label="add-item">Add Item</button>
+            </div>
+        </form>
+    </article>
     <script>
-        document.getElementById("send-data").onclick = function () {
+        const id = document.querySelector("#id");
+        const idName = document.querySelector("#name");
+        const price = document.querySelector("#price");
+        document.getElementById("add-item").onclick = function () {
             let xhr = new XMLHttpRequest();
-            xhr.open("PUT", "Your Lambda here");
+
+            //Get input values and resets each field to blank
+            const idValue = id.value;
+            id.value='';
+            const nameValue = idName.value;
+            idName.value='';
+            const priceValue = parseInt(price.value);
+            price.value = '';
+
+            //Sends request with user inputs
+            xhr.open("PUT", "https://62no40vw1g.execute-api.us-east-2.amazonaws.com/items");
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(JSON.stringify({
-                "id": "6666666",
-                "price": 19,
-                "name": "test put value"
+                "id": idValue,
+                "price": priceValue,
+                "name": nameValue
             }));
+
+            //Lets user know they should click the load data button to update the table
+            let lambda = document.getElementById("lambda-info");
+            lambda.textContent = "Click \"Load Data\" to refresh table";
         }
     </script>
 
-    <button id="load-data">Load Data</button>
-    <p>Loads data from the server</p>
     <script>
         document.getElementById("load-data").onclick = function () {
+            //Clears text that tells user to click the load button to update the table
             let lambda = document.getElementById("lambda-info");
+            lambda.textContent = "";
+
+            //Updates the table using the populateTable() function
             let xhr = new XMLHttpRequest();
             xhr.addEventListener("load", function () {
-                lambda.innerHTML = xhr.response;
+                const dataText = xhr.response;
+                const data = JSON.parse(dataText);
+
+                populateTable(data);
             });
-            xhr.open("GET", "Your Lambda here");
+            xhr.open("GET", "https://62no40vw1g.execute-api.us-east-2.amazonaws.com/items");
             xhr.send();
         }
 
-    </script>
+        function populateTable (obj) {
+            //Get the node for the table body we want to add to
+            const table = document.querySelector("tbody");
 
-    <hr>
-    <button id="delete-data">Delete Data</button>
-    <p>Deletes a JSON object from the server with 11111</p>
-    <script>
-        document.getElementById("delete-data").onclick = function () {
-            let xhr = new XMLHttpRequest();
-            xhr.open("DELETE", "Your Lambda here");
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send();
+            //Clear table
+            table.innerHTML = "";
+
+            //Iterate through each item currently in the database
+            for (const item of obj) {
+                //Create new elements to be appended on to the table body
+                const dataRow = document.createElement("tr");
+                const dataID = document.createElement("td");
+                const dataName = document.createElement("td");
+                const dataPrice = document.createElement("td");
+
+                //Delete button
+                const dataAction = document.createElement("td");
+                dataAction.id = "deleteData";
+                const deleteButton = document.createElement("button");
+                deleteButton.id = "deleteButton"
+                deleteButton.textContent = "Delete";
+
+                //Delete button event listener to delete item from database
+                deleteButton.addEventListener("click", (event) => {
+                    let xhr = new XMLHttpRequest();
+                    const url = "https://62no40vw1g.execute-api.us-east-2.amazonaws.com/items/" + item.id;
+                    xhr.open("DELETE", url);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.send();
+
+                    let lambda = document.getElementById("lambda-info");
+                    lambda.textContent = "Click \"Load Data\" to refresh table";
+                })
+
+                //Assign each part of the new row with the corresponding information from the database
+                dataID.textContent = item.id;
+                dataName.textContent = item.name;
+                dataPrice.textContent = item.price;
+                dataAction.appendChild(deleteButton);
+
+                //Append the table data to the table row
+                dataRow.appendChild(dataID);
+                dataRow.appendChild(dataName);
+                dataRow.appendChild(dataPrice);
+                dataRow.appendChild(dataAction);
+
+                //Append the table row to the table body
+                table.appendChild(dataRow);
+            }
         }
+
     </script>
 </body>
 

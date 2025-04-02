@@ -1,24 +1,14 @@
-# Web Dev Starter Code
+# Inventory App
 
 ## Overview
 
-TODO: Write a project description
+This project had us create a web page that gave the user the ability to manipulate the database we created in the last lab. The user is able to load a table with information from the database, add new items to the database, and delete items from the database.
 
 ## Sources and Credits
 
-TODO: You must credit the sources and authors of any code, libraries, or other
-assets you use in your project. If you leave this section blank, your project
-will be considered in violation of the Academic Honesty policy unless you truly
-created everything from scratch with no outside help. If you need to use a
-source that you cannot credit (e.g. a classmate's work), you must get explicit
-permission from your instructor.
-
-A simple bulleted list below is sufficient. For example:
-
-- Bootstrap: https://getbootstrap.com/
-- jQuery: https://jquery.com/
-- Background image: https://unsplash.com/photos/...
-- Sound effects: https://freesound.org/people/...
-- Icons: https://fontawesome.com/
-- Fonts: https://fonts.google.com/
-- etc.
+- Interacting with JSON: https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON
+- DOM manipulation: https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/DOM_scripting
+- Styling tables: https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Tables
+- Using inputs: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
+- Styling buttons: https://www.w3schools.com/css/css3_buttons.asp
+- Using the position tag: https://www.w3schools.com/css/css_positioning.asp
